@@ -71,3 +71,44 @@ pub fn draw_dashed_line(
         dist += dash_len + gap_len;
     }
 }
+
+pub fn draw_lights() {
+    let w = screen_width();
+    let h = screen_height();
+    let cx = w / 2.0;
+    let cy = h / 2.0;
+    let gap = 60.0;
+
+    let r = 8.0; 
+
+    let vertical_color = GREEN; 
+    let horizontal_color = RED;
+
+    draw_circle(
+        cx - gap - 15.0,
+        cy - gap - 15.0,
+        r,
+        vertical_color,
+    );
+
+    draw_circle(
+        cx + gap + 15.0,
+        cy + gap + 15.0,
+        r,
+        vertical_color,
+    );
+
+    draw_circle(
+        cx - gap - 15.0,
+        cy + gap + 15.0,
+        r,
+        horizontal_color,
+    );
+
+    draw_circle(
+        cx + gap + 15.0,
+        cy - gap - 15.0,
+        r,
+        horizontal_color,
+    );
+}

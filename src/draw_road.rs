@@ -70,7 +70,20 @@ pub fn draw_road() {
         tickness,
         color1,
     );
-    draw_rectangle(screen_width / 2.0 - gap, 0.0, gap * 2.0, screen_height, BLACK);
-    draw_rectangle(0.0, screen_height / 2.0 - gap, screen_width, gap * 2.0, BLACK);
+    draw_rectangle(
+        screen_width / 2.0 - gap,
+        0.0,
+        gap * 2.0,
+        screen_height,
+        BLACK,
+    );
+    draw_rectangle(
+        0.0,
+        screen_height / 2.0 - gap,
+        screen_width,
+        gap * 2.0,
+        BLACK,
+    );
     draw_dashed_middle_lines(20.0);
+    draw_lights();
 }

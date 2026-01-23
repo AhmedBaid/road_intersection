@@ -1,44 +1,50 @@
 use macroquad::prelude::*;
-
-#[derive(Debug, PartialEq)]
+#[derive(Clone)]
 pub struct Car {
-    pub color: Color,
     pub direction: String,
     pub width: i32,
     pub height: i32,
     pub cord: (f32, f32),
-    pub stoped: bool,
-    pub road: String,
-}
-
-
-fn get_color(nb: u32) -> Color {
-    match nb {
-        1 => GREEN,
-        2 => BLUE,
-        3 => RED,
-        _ => YELLOW,
-    }
-}
-fn get_road(nb: u32) -> String {
-    match nb {
-        1 => "up".to_string(),
-        2 => "down".to_string(),
-        3 => "left".to_string(),
-        _ => "right".to_string(),
-    }
+    pub color: Color,
+    pub speed: f32,
 }
 
 impl Car {
-    pub fn new(color: u32, dir: String, w: i32, h: i32, cord: (f32, f32), stoped: bool,road:u32) -> Self {
+    pub fn new(
+        direction: String,
+        width: i32,
+        height: i32,
+        cord: (f32, f32),
+        color: i32,
+    ) -> Self {
+        let color = match color {
+            1 => YELLOW,
+            2 => BLUE,
+            3 => RED,
+            _ => GREEN,
+        };
+
         Self {
-            color: get_color(color),
-            direction: dir,
-            width: w,
-            height: h,
+            direction,
+            width,
+            height,
             cord,
-            stoped,
-            road:get_road(road),
+            color,
+            speed: 160.0,
         }
+    }
+
+    pub fn update(&mut self, dt: f32) {
+        let (mut x, mut y) = self.cord;
+
+        match self.direction.as_str() {
+            "up" => y -= self.speed * dt,
+            "down" => y += self.speed * dt,
+            "left" => x -= self.speed * dt,
+            "right" => x += self.speed * dt,
+            _ => {}
+        }
+
+        self.cord = (x, y);
     }
 }
