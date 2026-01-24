@@ -5,7 +5,7 @@ pub fn draw_road() {
     let screen_height = screen_height();
     let tickness = 3.0;
     let gap = 60.0;
-    let color1 = WHITE;
+    let color1 = GOLD;
     draw_line(
         (screen_width / 2.0) - gap,
         (screen_height / 2.0) - gap,
@@ -85,5 +85,4 @@ pub fn draw_road() {
         BLACK,
     );
     draw_dashed_middle_lines(20.0);
-    draw_lights();
 }
