@@ -18,19 +18,6 @@ impl TrafficLight {
             current_duration: 4.0,
         }
     }
-    pub fn update(&mut self, dt: f32) {
-        self.timer -= dt;
-
-        if self.timer <= 0.0 {
-            if self.count == 3 {
-                self.count = 0;
-            } else {
-                self.count += 1;
-            }
-            self.state = self.get_state();
-            self.timer = 4.0;
-        }
-    }
 
 
     pub fn update_with_congestion(
