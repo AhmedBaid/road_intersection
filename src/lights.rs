@@ -147,5 +147,29 @@ fn calculate_next_state(
         draw_circle(cx - gap - 15.0, cy + gap + 15.0, r, bottom_left);
 
         draw_circle(cx + gap + 15.0, cy + gap + 15.0, r, bottom_right);
+
+
+    // Top-left margin
+    let margin_x = 10.0;
+    let margin_y = 10.0;
+
+    // Timer at top-left
+    draw_text(
+        &format!("{:.1}s", self.timer),
+        margin_x,
+        margin_y + 24.0, // add text height so it’s visible
+        24.0,
+        WHITE,
+    );
+
+    // Current green direction below timer
+    draw_text(
+        &format!("Green: {}", self.state.to_uppercase()),
+        margin_x,
+        margin_y + 24.0 + 24.0 + 5.0, // 24 for timer + 24 for font size + 5 spacing
+        20.0,
+        GREEN,
+    );
+
     }
 }
