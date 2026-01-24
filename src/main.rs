@@ -7,6 +7,38 @@ use cars::*;
 use draw_road::*;
 use lights::*;
 
+
+// Count cars in each lane/direction
+fn count_cars_per_lane(cars: &Vec<Car>) -> (usize, usize, usize, usize) {
+    let mut up_count = 0;
+    let mut down_count = 0;
+    let mut left_count = 0;
+    let mut right_count = 0;
+    
+    for car in cars {
+        match car.direction.as_str() {
+            "up" => up_count += 1,
+            "down" => down_count += 1,
+            "left" => left_count += 1,
+            "right" => right_count += 1,
+            _ => {}
+        }
+    }
+    
+    (up_count, down_count, left_count, right_count)
+}
+
+
+// Calculate lane capacity based on project requirements
+// Calculate lane capacity based on project requirements
+fn calculate_lane_capacity() -> usize {
+    let lane_length = 400.0_f32;
+    let vehicle_length = 30.0_f32;
+    let safety_gap = 50.0_f32;
+    
+    (lane_length / (vehicle_length + safety_gap)).floor() as usize
+}
+
 fn window_conf() -> Conf {
     Conf {
         window_title: "road_intersection".to_string(),
@@ -43,10 +75,20 @@ async fn main() {
     // Safety gap for following cars
     let safety_gap = 50.0;
 
+ let lane_capacity = calculate_lane_capacity();
+
     loop {
         let dt = get_frame_time();
 
-        traffic_light.update(dt);
+   
+        // Count cars per direction
+        let (up_count, down_count, left_count, right_count) = count_cars_per_lane(&cars);
+        
+        // Update traffic light with congestion info
+        traffic_light.update_with_congestion(dt, up_count, down_count, left_count, right_count, lane_capacity);
+
+
+
         clear_background(Color::from_rgba(4, 96, 85, 255));
         draw_road();
         traffic_light.draw_lights();
@@ -89,6 +131,20 @@ async fn main() {
         }
 
         // --- Update Logic with Collision Checks ---
+       if is_key_pressed(KeyCode::R) {
+            let random_dir = rand::gen_range(0, 4);
+            let (direction, cord) = match random_dir {
+                0 => ("up", (screen_width() / 2.0 + 15.0, screen_height() - 35.0)),
+                1 => ("down", (screen_width() / 2.0 - 45.0, 10.0)),
+                2 => ("left", (screen_width() - 35.0, screen_height() / 2.0 - 45.0)),
+                _ => ("right", (10.0, screen_height() / 2.0 + 15.0)),
+            };
+            
+            if can_spawn(&cars, direction, cord) {
+                cars.push(Car::new(direction.to_string(), 30, 30, cord, rand::gen_range(1, 4)));
+            }
+        }
+
 
         // We use indices to access cars to avoid simultaneous borrow issues
         for i in 0..cars.len() {
@@ -147,6 +203,23 @@ async fn main() {
         for car in &cars {
             draw_rectangle(car.cord.0, car.cord.1, car.width as f32, car.height as f32, car.color);
         }
+
+        // draw_text(
+        //     &format!("Lane Capacity: {}", lane_capacity),
+        //     10.0,
+        //     20.0,
+        //     20.0,
+        //     WHITE,
+        // );
+        // draw_text(
+        //     &format!("Up: {}/{} | Down: {}/{} | Left: {}/{} | Right: {}/{}", 
+        //         up_count, lane_capacity, down_count, lane_capacity, 
+        //         left_count, lane_capacity, right_count, lane_capacity),
+        //     10.0,
+        //     40.0,
+        //     20.0,
+        //     WHITE,
+        // );
 
         next_frame().await;
     }
