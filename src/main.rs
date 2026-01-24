@@ -40,7 +40,7 @@ async fn main() {
                 30,
                 30,
                 cord,
-                rand::gen_range(1, 5),
+                rand::gen_range(1, 4),
             ));
         }
 
@@ -51,7 +51,7 @@ async fn main() {
                 30,
                 30,
                 cord,
-                rand::gen_range(1, 5),
+                rand::gen_range(1, 4),
             ));
         }
 
@@ -62,7 +62,7 @@ async fn main() {
                 30,
                 30,
                 cord,
-                rand::gen_range(1, 5),
+                rand::gen_range(1, 4),
             ));
         }
 
@@ -73,7 +73,7 @@ async fn main() {
                 30,
                 30,
                 cord,
-                rand::gen_range(1, 5),
+                rand::gen_range(1, 4),
             ));
         }
 
