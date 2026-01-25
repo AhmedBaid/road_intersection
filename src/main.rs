@@ -7,35 +7,61 @@ use cars::*;
 use draw_road::*;
 use lights::*;
 
-
 // Count cars in each lane/direction
 fn count_cars_per_lane(cars: &Vec<Car>) -> (usize, usize, usize, usize) {
     let mut up_count = 0;
     let mut down_count = 0;
     let mut left_count = 0;
     let mut right_count = 0;
-    
+
     for car in cars {
         match car.direction.as_str() {
-            "up" => up_count += 1,
-            "down" => down_count += 1,
-            "left" => left_count += 1,
-            "right" => right_count += 1,
+            "up" => {
+                up_count += 1;
+            }
+            "down" => {
+                down_count += 1;
+            }
+            "left" => {
+                left_count += 1;
+            }
+            "right" => {
+                right_count += 1;
+            }
             _ => {}
         }
     }
-    
+
     (up_count, down_count, left_count, right_count)
 }
 
+fn is_intersection_occupied(cars: &Vec<Car>) -> bool {
+    let w = screen_width();
+    let h = screen_height();
+    let cx = w / 2.0;
+    let cy = h / 2.0;
+    let gap = 60.0;
 
-// Calculate lane capacity based on project requirements
+    let left = cx - gap;
+    let right = cx + gap;
+    let top = cy - gap;
+    let bottom = cy + gap;
+
+    for car in cars {
+        let (x, y) = car.cord;
+        // Check if car center is inside the box
+        if x > left && x < right && y > top && y < bottom {
+            return true;
+        }
+    }
+    false
+}
 // Calculate lane capacity based on project requirements
 fn calculate_lane_capacity() -> usize {
     let lane_length = 400.0_f32;
     let vehicle_length = 30.0_f32;
     let safety_gap = 50.0_f32;
-    
+
     (lane_length / (vehicle_length + safety_gap)).floor() as usize
 }
 
@@ -72,22 +98,26 @@ async fn main() {
     let mut cars: Vec<Car> = Vec::new();
     let mut traffic_light = TrafficLight::new();
 
-    // Safety gap for following cars
     let safety_gap = 50.0;
 
- let lane_capacity = calculate_lane_capacity();
+    let lane_capacity = calculate_lane_capacity();
 
     loop {
         let dt = get_frame_time();
 
-   
-        // Count cars per direction
         let (up_count, down_count, left_count, right_count) = count_cars_per_lane(&cars);
-        
-        // Update traffic light with congestion info
-        traffic_light.update_with_congestion(dt, up_count, down_count, left_count, right_count, lane_capacity);
 
+        let intersection_clear = !is_intersection_occupied(&cars);
 
+        traffic_light.update_with_congestion(
+            dt,
+            up_count,
+            down_count,
+            left_count,
+            right_count,
+            lane_capacity,
+            intersection_clear
+        );
 
         clear_background(Color::from_rgba(4, 96, 85, 255));
         draw_road();
@@ -99,8 +129,6 @@ async fn main() {
         if is_key_pressed(KeyCode::C) || is_key_pressed(KeyCode::Backspace) {
             cars.clear();
         }
-
-        // --- Spawning Logic with Safety Checks ---
 
         if is_key_pressed(KeyCode::Up) {
             let cord = (screen_width() / 2.0 + 15.0, screen_height() - 35.0);
@@ -130,8 +158,7 @@ async fn main() {
             }
         }
 
-        // --- Update Logic with Collision Checks ---
-       if is_key_pressed(KeyCode::R) {
+        if is_key_pressed(KeyCode::R) {
             let random_dir = rand::gen_range(0, 4);
             let (direction, cord) = match random_dir {
                 0 => ("up", (screen_width() / 2.0 + 15.0, screen_height() - 35.0)),
@@ -139,20 +166,17 @@ async fn main() {
                 2 => ("left", (screen_width() - 35.0, screen_height() / 2.0 - 45.0)),
                 _ => ("right", (10.0, screen_height() / 2.0 + 15.0)),
             };
-            
+
             if can_spawn(&cars, direction, cord) {
                 cars.push(Car::new(direction.to_string(), 30, 30, cord, rand::gen_range(1, 4)));
             }
         }
 
-
-        // We use indices to access cars to avoid simultaneous borrow issues
         for i in 0..cars.len() {
             let mut blocked = false;
             let my_cord = cars[i].cord;
             let my_dir = cars[i].direction.clone();
 
-            // Check against every other car
             for j in 0..cars.len() {
                 if i == j {
                     continue;
@@ -160,7 +184,6 @@ async fn main() {
 
                 let other = &cars[j];
 
-                // Only check collision with cars from the same origin direction
                 if my_dir == other.direction {
                     let other_cord = other.cord;
 
@@ -170,12 +193,11 @@ async fn main() {
                     ).sqrt();
 
                     if dist < safety_gap {
-                        // Check if the 'other' car is logically in front
                         let is_ahead = match my_dir.as_str() {
-                            "up" => other_cord.1 < my_cord.1, // Moving up (negative Y)
-                            "down" => other_cord.1 > my_cord.1, // Moving down (positive Y)
-                            "left" => other_cord.0 < my_cord.0, // Moving left (negative X)
-                            "right" => other_cord.0 > my_cord.0, // Moving right (positive X)
+                            "up" => other_cord.1 < my_cord.1,
+                            "down" => other_cord.1 > my_cord.1,
+                            "left" => other_cord.0 < my_cord.0,
+                            "right" => other_cord.0 > my_cord.0,
                             _ => false,
                         };
 
@@ -190,7 +212,6 @@ async fn main() {
             cars[i].update(dt, traffic_light.get_state(), blocked);
         }
 
-        // cleanup cars that left the screen
         cars = cars
             .iter()
             .filter(|car| {
@@ -203,23 +224,6 @@ async fn main() {
         for car in &cars {
             draw_rectangle(car.cord.0, car.cord.1, car.width as f32, car.height as f32, car.color);
         }
-
-        // draw_text(
-        //     &format!("Lane Capacity: {}", lane_capacity),
-        //     10.0,
-        //     20.0,
-        //     20.0,
-        //     WHITE,
-        // );
-        // draw_text(
-        //     &format!("Up: {}/{} | Down: {}/{} | Left: {}/{} | Right: {}/{}", 
-        //         up_count, lane_capacity, down_count, lane_capacity, 
-        //         left_count, lane_capacity, right_count, lane_capacity),
-        //     10.0,
-        //     40.0,
-        //     20.0,
-        //     WHITE,
-        // );
 
         next_frame().await;
     }
