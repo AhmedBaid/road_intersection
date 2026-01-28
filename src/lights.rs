@@ -75,7 +75,7 @@ impl TrafficLight {
             .unwrap_or(0);
 
         let overload_threshold = 3;
-        for i in 1..=4 {
+        for i in 1..4 {
             let check_idx = (current_idx + i) % 4;
 
             if counts[check_idx] > overload_threshold {
