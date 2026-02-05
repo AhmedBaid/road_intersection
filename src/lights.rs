@@ -28,7 +28,7 @@ impl TrafficLight {
         left_count: usize,
         right_count: usize,
         capacity: usize,
-        _is_intersection_clear: bool
+        _is_intersection_clear: bool,
     ) {
         if self.timer > 0.0 {
             self.timer -= dt;
@@ -49,41 +49,46 @@ impl TrafficLight {
 
                 let ratio = (count as f32) / (capacity as f32);
 
-                self.timer = if ratio > 0.4 { 2.0 } else if count > 0 { 1.0 } else { 0.5 };
+                self.timer = if ratio > 0.4 {
+                    2.0
+                } else if count > 0 {
+                    1.0
+                } else {
+                    0.5
+                };
             }
         } else {
             if self.timer <= 0.0 {
-                self.next_state = self.calculate_priority(
-                    up_count,
-                    down_count,
-                    left_count,
-                    right_count
-                );
+                self.next_state =
+                    self.calculate_priority(up_count, down_count, left_count, right_count);
 
                 self.state = "ALL_RED".to_string();
                 self.clearing = true;
-                self.timer = 2.0;
+                self.timer = 0.5;
             }
         }
     }
 
     fn calculate_priority(&self, up: usize, down: usize, left: usize, right: usize) -> String {
-        let counts = [down, left, up, right];
+        let counts = [down, left, up, right].to_vec();
 
-        let current_idx = LIGHTS.iter()
-            .position(|&x| x == self.state)
-            .unwrap_or(0);
-
-        let overload_threshold = 3;
-        for i in 1..4 {
-            let check_idx = (current_idx + i) % 4;
-
-            if counts[check_idx] > overload_threshold {
-                return LIGHTS[check_idx].to_string();
+        let current_idx = LIGHTS.iter().position(|&x| x == self.state).unwrap_or(0);
+        let mut filtered_counts = Vec::new();
+        for (i, _) in counts.iter().enumerate() {
+            if i == current_idx {
+                continue;
+            } else {
+                filtered_counts.push(counts[i]);
             }
         }
-
-        let next_idx = (current_idx + 1) % 4;
+        filtered_counts.sort();
+        let mut next_idx = 0;
+        for i in 0..counts.len() {
+            if counts[i] == filtered_counts[filtered_counts.len() - 1] {
+                next_idx = i;
+                break;
+            }
+        }
         LIGHTS[next_idx].to_string()
     }
 
@@ -112,16 +117,26 @@ impl TrafficLight {
         // Debug Text
         let margin_x = 10.0;
         let margin_y = 10.0;
-        let status_text = if self.clearing { "SWITCHING..." } else { &self.state };
+        let status_text = if self.clearing {
+            "SWITCHING..."
+        } else {
+            &self.state
+        };
         let status_color = if self.clearing { YELLOW } else { GREEN };
 
-        draw_text(&format!("Timer: {:.1}s", self.timer), margin_x, margin_y + 20.0, 24.0, WHITE);
+        draw_text(
+            &format!("Timer: {:.1}s", self.timer),
+            margin_x,
+            margin_y + 20.0,
+            24.0,
+            WHITE,
+        );
         draw_text(
             &format!("Active: {}", status_text.to_uppercase()),
             margin_x,
             margin_y + 50.0,
             20.0,
-            status_color
+            status_color,
         );
     }
 }

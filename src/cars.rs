@@ -22,7 +22,7 @@ impl Car {
             height,
             cord,
             color,
-            speed: 160.0,
+            speed: 360.0,
         }
     }
 
