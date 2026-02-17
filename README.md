@@ -1,5 +1,6 @@
 # Road Intersection Traffic Simulation
-
+## demo video
+https://github.com/user-attachments/assets/b050242e-3b05-4e80-8a61-da44947bfc60
 ## Overview
 
 This project is a real-time traffic simulation built in **Rust** using the **Macroquad** game engine. It visualizes a busy four-way intersection where vehicles must navigate traffic lights and traffic flow rules. The objective is to demonstrate a traffic control strategy that manages congestion and prevents collisions while allowing user interaction to spawn vehicles dynamically.
