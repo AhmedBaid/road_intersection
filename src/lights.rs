@@ -28,7 +28,6 @@ impl TrafficLight {
         left_count: usize,
         right_count: usize,
         capacity: usize,
-        _is_intersection_clear: bool,
     ) {
         if self.timer > 0.0 {
             self.timer -= dt;

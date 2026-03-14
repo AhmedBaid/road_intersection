@@ -22,7 +22,7 @@ impl Car {
             height,
             cord,
             color,
-            speed: 360.0,
+            speed: 560.0,
         }
     }
 
@@ -36,101 +36,105 @@ impl Car {
 
         match self.direction.as_str() {
             "up" => {
-                if
-                    y >= screen_height() / 2.0 + 12.0 &&
-                    y <= screen_height() / 2.0 + 18.0 &&
-                    self.color == RED
+                if y >= screen_height() / 2.0 + 12.0
+                    && y <= screen_height() / 2.0 + 18.0
+                    && self.color == RED
                 {
                     y = screen_height() / 2.0 + 15.0;
                     x += self.speed * dt;
-                } else if
-                    y >= screen_height() / 2.0 - 48.0 &&
-                    y <= screen_height() / 2.0 - 43.0 &&
-                    self.color == YELLOW
+                } else if y >= screen_height() / 2.0 - 48.0
+                    && y <= screen_height() / 2.0 - 43.0
+                    && self.color == YELLOW
                 {
                     y = screen_height() / 2.0 - 45.0;
                     x -= self.speed * dt;
                 } else {
+                    let stop_line = screen_height() / 2.0 + 65.0;
+                    let clear_line = screen_height() / 2.0 + 60.0;
+
                     if state == self.direction {
                         y -= self.speed * dt;
-                    } else if y >= screen_height() / 2.0 + 65.0 {
-                        y -= self.speed * dt;
-                    } else if y < screen_height() / 2.0 + 60.0 {
+                    } else if y >= stop_line {
+                        y = (y - self.speed * dt).max(stop_line);
+                    } else if y < clear_line {
                         y -= self.speed * dt;
                     }
                 }
             }
             "down" => {
-                if
-                    y >= screen_height() / 2.0 - 48.0 &&
-                    y <= screen_height() / 2.0 - 43.0 &&
-                    self.color == RED
+                if y >= screen_height() / 2.0 - 48.0
+                    && y <= screen_height() / 2.0 - 43.0
+                    && self.color == RED
                 {
                     y = screen_height() / 2.0 - 45.0;
                     x -= self.speed * dt;
-                } else if
-                    y >= screen_height() / 2.0 + 12.0 &&
-                    y <= screen_height() / 2.0 + 18.0 &&
-                    self.color == YELLOW
+                } else if y >= screen_height() / 2.0 + 12.0
+                    && y <= screen_height() / 2.0 + 18.0
+                    && self.color == YELLOW
                 {
                     y = screen_height() / 2.0 + 15.0;
                     x += self.speed * dt;
                 } else {
+                    let stop_line = screen_height() / 2.0 - 95.0;
+                    let clear_line = screen_height() / 2.0 - 90.0;
+
                     if state == self.direction {
                         y += self.speed * dt;
-                    } else if y <= screen_height() / 2.0 - 95.0 {
-                        y += self.speed * dt;
-                    } else if y > screen_height() / 2.0 - 90.0 {
+                    } else if y <= stop_line {
+                        y = (y + self.speed * dt).min(stop_line);
+                    } else if y > clear_line {
                         y += self.speed * dt;
                     }
                 }
             }
             "left" => {
-                if
-                    x >= screen_width() / 2.0 + 12.0 &&
-                    x <= screen_width() / 2.0 + 18.0 &&
-                    self.color == RED
+                if x >= screen_width() / 2.0 + 12.0
+                    && x <= screen_width() / 2.0 + 18.0
+                    && self.color == RED
                 {
                     x = screen_width() / 2.0 + 15.0;
                     y -= self.speed * dt;
-                } else if
-                    x >= screen_width() / 2.0 - 48.0 &&
-                    x <= screen_width() / 2.0 - 42.0 &&
-                    self.color == YELLOW
+                } else if x >= screen_width() / 2.0 - 48.0
+                    && x <= screen_width() / 2.0 - 42.0
+                    && self.color == YELLOW
                 {
                     x = screen_width() / 2.0 - 45.0;
                     y += self.speed * dt;
                 } else {
+                    let stop_line = screen_width() / 2.0 + 65.0;
+                    let clear_line = screen_width() / 2.0 + 60.0;
+
                     if state == self.direction {
                         x -= self.speed * dt;
-                    } else if x >= screen_width() / 2.0 + 65.0 {
-                        x -= self.speed * dt;
-                    } else if x < screen_width() / 2.0 + 60.0 {
+                    } else if x >= stop_line {
+                        x = (x - self.speed * dt).max(stop_line);
+                    } else if x < clear_line {
                         x -= self.speed * dt;
                     }
                 }
             }
             "right" => {
-                if
-                    x >= screen_width() / 2.0 - 48.0 &&
-                    x <= screen_width() / 2.0 - 42.0 &&
-                    self.color == RED
+                if x >= screen_width() / 2.0 - 48.0
+                    && x <= screen_width() / 2.0 - 42.0
+                    && self.color == RED
                 {
                     x = screen_width() / 2.0 - 45.0;
                     y += self.speed * dt;
-                } else if
-                    x >= screen_width() / 2.0 + 12.0 &&
-                    x <= screen_width() / 2.0 + 18.0 &&
-                    self.color == YELLOW
+                } else if x >= screen_width() / 2.0 + 12.0
+                    && x <= screen_width() / 2.0 + 18.0
+                    && self.color == YELLOW
                 {
                     x = screen_width() / 2.0 + 15.0;
                     y -= self.speed * dt;
                 } else {
+                    let stop_line = screen_width() / 2.0 - 95.0;
+                    let clear_line = screen_width() / 2.0 - 90.0;
+
                     if state == self.direction {
                         x += self.speed * dt;
-                    } else if x <= screen_width() / 2.0 - 95.0 {
-                        x += self.speed * dt;
-                    } else if x > screen_width() / 2.0 - 90.0 {
+                    } else if x <= stop_line {
+                        x = (x + self.speed * dt).min(stop_line);
+                    } else if x > clear_line {
                         x += self.speed * dt;
                     }
                 }
